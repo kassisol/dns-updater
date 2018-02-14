@@ -27,13 +27,17 @@ func (c *Config) List(canonical string) (string, []string, error) {
 
 	result := req.Get()
 
+	if result.Response.StatusCode != 200 {
+		return "", []string{}, fmt.Errorf("Something went wrong")
+	}
+
 	var response []RecordHost
 	if err := json.Unmarshal(result.Body, &response); err != nil {
 		return "", []string{}, err
 	}
 
-	if result.Response.StatusCode != 200 {
-		return "", []string{}, fmt.Errorf("Something went wrong")
+	if len(response) == 0 {
+		return "", []string{}, nil
 	}
 
 	host := response[0]
